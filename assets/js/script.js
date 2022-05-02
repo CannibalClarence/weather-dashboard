@@ -114,3 +114,75 @@ $.ajax({
 })
 }
 
+//function to display the last searched city's data
+function init(){
+    cityName = localStorage.getItem("cityname");
+    if (cityName !== null) {
+    
+      var cityList = $("<button>");
+      cityList.addClass("list-group-item list-group-item-action");
+      cityList.text(cityName);
+      $("ul").prepend(cityList);
+      getWeather()
+    }
+    }
+    
+    function searchButton() {
+    cityName = $("input").val().trim();
+    
+    //buttons are created dynamically as the user enters more cities to search
+    var cityList = $("<button>");
+    cityList.addClass("list-group-item list-group-item-action");
+    cityList.text(cityName);
+    
+    //buttons are added to the list in the sidebar
+    $("ul").prepend(cityList);
+    //after the user's city is saved to the list, the input field is cleared out
+    $("input").val("");
+    
+    getWeather();
+    }
+    
+    init();
+    
+    //submit event for when the users enter the city search term
+    $("#city-form").submit(function (event) {
+    event.preventDefault();
+    searchButton();
+    })
+    
+    $("#form-submit").click(function (event) {
+    event.preventDefault();
+    searchButton();
+    })
+    
+    //click event listener for when the user clicks on a city in the history list
+    $("ul").on("click", "button", function () {
+    cityName = $(this).text();
+    console.log(cityName);
+    
+    getWeather();
+    })
+    
+    //error handling for when an incorrect city is typed
+    $( document ).ajaxError(function() {
+    //creates a dynamic paragraph element
+    var error = $("<p>");
+    error.addClass("error");
+    error.css({"color": "red"});
+    error.text("Please try again with a valid city");
+    //prepends the error message below the text field
+    $("ul").prepend(error);
+    //find the button just created with the incorrect city name
+    var p = $(this).find("button");
+    //removes the button with the incorrect name
+    p[1].remove();
+    //error message goes away after 2 seconds
+    setTimeout(function () {
+      error.remove();
+      }, 2000);
+    });
+    
+    })
+    
+              
