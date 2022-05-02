@@ -45,4 +45,72 @@ $(document).ready(function () {
   $("#wind").text("Wind Speed: " + response.current.wind_speed + " MPH");
   $(".color").text(response.current.uvi);
 
- 
+  //displays the html to the user
+  $("#current").css({"display":"block"});
+
+  //array for the daily response
+  var daily = response.daily;
+
+  //for loop to loop through the daily response array
+  for (i = 1; i < daily.length - 2; i++) {
+      //saves each response in a variable
+      var dailyDate = moment.unix(daily[i].dt).format("dddd MM/DD/YYYY");
+      var dailyTemp = daily[i].temp.day;
+      var dailyHum = daily[i].humidity;
+      var dailyIcon = daily[i].weather[0].icon;
+
+      //creates dynamic elements
+      var dailyDiv = $("<div class='card text-white bg-primary p-2'>")
+      var pTemp = $("<p>");
+      var pHum = $("<p>");
+      var imgIcon = $("<img>");
+      var hDate = $("<h6>");
+
+      //adds text and attributes to the dynamic elements
+      hDate.text(dailyDate);
+      imgIcon.attr("src", "https://openweathermap.org/img/wn/" + dailyIcon + "@2x.png")
+      imgIcon.addClass("img-fluid");
+      imgIcon.css({"width": "100%"});
+      pTemp.text("Temp: " + dailyTemp + "° F");
+      pHum.text("Humidity: " + dailyHum + "%");
+
+      //appends the dynamic elements to the html
+      dailyDiv.append(hDate);
+      dailyDiv.append(imgIcon);
+      dailyDiv.append(pTemp);
+      dailyDiv.append(pHum);
+      $(".card-deck").append(dailyDiv);
+
+      //displays this html to the user
+      $("#five-day").css({"display":"block"});
+  }
+
+})
+}
+
+//function that uses the city user input to make an API call
+function getWeather() {
+var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&lang=en&appid=aec299195260a001b09706b5bfe740f7";
+
+//first API call to get the lat and lon
+$.ajax({
+  url: queryURL,
+  method: "GET"
+}).then(function (response) {
+  //stores the coordinates for lat and lon from the API response
+  lat = response.coord.lat;
+  lon = response.coord.lon;
+
+  //adds the city name and date to the html for the current weather
+  $("#city").text(response.name);
+  $("#date").text(moment.unix(response.dt).format("dddd, MM/DD/YYYY"));
+              
+  //saves the city name to local storage
+  localStorage.setItem("cityname", response.name);
+  
+  //passing the coordinates to the next function
+  getWeatherOneAPI(lat,lon);
+
+})
+}
+
